@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Kuponia</title>
+    <title>Game Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
         @font-face {
@@ -95,110 +95,39 @@
     </style>
 </head>
 <body>
-<div id="loadingBox">
-    <div class="loading-text">Lädt...</div>
-</div>
+
 
 <canvas id="unity-canvas"></canvas>
-<!-- firebase sdk -->
-<script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics-compat.js"></script>
 
+<script src="Build/app.loader.js"></script>
 <script>
-    window.sendSupportEmail = function () {
-        const email = "support@kaufland.de";
-        const subject = encodeURIComponent("Supportanfrage");
-        window.location.href = `mailto:${email}?subject=${subject}`;
-    };
-    const buildUrl = "Build";
-    const loaderUrl = buildUrl + "/app.loader.js";
-    const config = {
-        dataUrl: buildUrl + "/app.data.br",
-        frameworkUrl: buildUrl + "/app.framework.js.br",
-        codeUrl: buildUrl + "/app.wasm.br",
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.head.appendChild(meta);
+
+        const canvas = document.getElementById("unity-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "fixed";
+
+        document.body.style.textAlign = "left";
+
+    }
+
+    createUnityInstance(document.getElementById("unity-canvas"), {
+        arguments: [],
+        dataUrl: "Build/app.data.unityweb",
+        frameworkUrl: "Build/app.framework.js.unityweb",
+        codeUrl: "Build/app.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "Tabbler",
-        // productName: "Shelf Shuffle",
-        productName: "Kuponia",
-        productVersion: "0.1",
-        canvas: document.querySelector("#unity-canvas"),
-    };
-    const firebaseConfig = {
-        apiKey: "AIzaSyB3ACQkoqPkr4Oo4TEWncCXKxfgCdYq6OM",
-        authDomain: "kaufland-shelfsorting.firebaseapp.com",
-        projectId: "kaufland-shelfsorting",
-        storageBucket: "kaufland-shelfsorting.firebasestorage.app",
-        messagingSenderId: "114818877492",
-        appId: "1:114818877492:web:2f89e7894ffe822c1d2261",
-        measurementId: "G-FK3F7PQB0X",
-    };
-    const firebaseApp = firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics(firebaseApp);
-    const loadingBox = document.getElementById("loadingBox");
-    const stepInterval = 400;
-    const script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = () => {
-        let loading = true;
-        let stepIndex = 0;
-        let side = "left";
-        let activeFeet = 0;
-        const radius = 150; // radius of the circle
-        const centerX = loadingBox.clientWidth / 2;
-        const centerY = loadingBox.clientHeight / 2;
-        const angleStep = (Math.PI * 2) / 13; // adjust for density
-        const stepTimer = setInterval(() => {
-            if (!loading) {
-                clearInterval(stepTimer);
-                return;
-            }
-
-            const angle = (stepIndex * angleStep + Math.PI / 2) % (Math.PI * 2);
-            const nextAngle = ((stepIndex + 1) * angleStep + Math.PI / 2) % (Math.PI * 2);
-            const x = centerX + radius * Math.cos(angle);
-            const y = centerY + radius * Math.sin(angle);
-            const nextX = centerX + radius * Math.cos(nextAngle);
-            const nextY = centerY + radius * Math.sin(nextAngle);
-            const dx = nextX - x;
-            const dy = nextY - y;
-            const rotationDeg = Math.atan2(dy, dx) * (180 / Math.PI) - 90; // align with "pointing up" default
-            const wrapper = document.createElement("div");
-            wrapper.style.position = "absolute";
-            wrapper.style.left = `${x}px`;
-            wrapper.style.top = `${y}px`;
-            wrapper.style.transform = `rotate(${rotationDeg}deg)`;
-            const foot = document.createElement("div");
-            foot.className = `foot-${side}`;
-            foot.style.animationDelay = "0s";
-            wrapper.appendChild(foot);
-            loadingBox.appendChild(wrapper);
-            activeFeet++;
-
-            foot.addEventListener("animationend", () => {
-                wrapper.remove();
-                activeFeet--;
-            });
-
-            stepIndex++;
-            side = side === "left" ? "right" : "left";
-        }, stepInterval);
-
-        createUnityInstance(config.canvas, config, (progress) => {
-            if (progress >= 1) {
-                loading = false;
-                loadingBox.style.display = "none";
-            }
-        })
-            .then((unityInstance) => {
-                window.unityInstance = unityInstance;
-                loading = false;
-                loadingBox.style.display = "none";
-            })
-            .catch((message) => {
-                alert("Failed to load Unity WebGL build.\n\n" + message);
-            });
-    };
-    document.body.appendChild(script);
+        companyName: "DefaultCompany",
+    productName: "spikes-game",
+    productVersion: "1.0",
+    }).then((unityInstance) => {
+        window.unityInstance = unityInstance;
+    }).catch((message) => { alert(message); });
     
     window.addEventListener("message", function(event) {
 
