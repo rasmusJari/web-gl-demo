@@ -1,45 +1,228 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | WebGLDemo</title>
-  </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=960 height=600 tabindex="-1" style="width: 960px; height: 600px; background: #231F20"></canvas>
-    <script src="Build/app.loader.js"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Kuponia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        @font-face {
+            font-family: "KauflandBold";
+            src: url("assets/kaufland-bold.otf") format("opentype");
+            font-weight: normal;
+            font-style: normal;
+        }
 
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+          //  font-family: "KauflandBold", sans-serif;
+        }
 
-        document.body.style.textAlign = "left";
+        #unity-canvas {
+            width: 100vw;
+            height: 100dvh;
+            display: block;
+            background: #e10915;
+        }
 
-      }
+        #loadingBox {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #e10915;
+            z-index: 10;
+            width: 100%;
+            height: 50vh;
 
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        arguments: [],
-        dataUrl: "Build/app.data.unityweb",
-        frameworkUrl: "Build/app.framework.js.unityweb",
-        codeUrl: "Build/app.wasm.unityweb",
+            .loading-text {
+                color: white;
+                margin-bottom: 10px;
+                font-size: 24px;
+                text-align: center;
+            }
+        }
+
+        /*@keyframes stepFade {*/
+        /*    0% {*/
+        /*        opacity: 0;*/
+        /*        transform: scale(0.8);*/
+        /*    }*/
+        /*    20% {*/
+        /*        opacity: 1;*/
+        /*        transform: scale(1);*/
+        /*    }*/
+        /*    80% {*/
+        /*        opacity: 1;*/
+        /*    }*/
+        /*    100% {*/
+        /*        opacity: 0;*/
+        /*    }*/
+        /*}*/
+        
+        /*.foot-left,*/
+        /*.foot-right {*/
+        /*    background-size: contain;*/
+        /*    background-repeat: no-repeat;*/
+        /*    position: absolute;*/
+        /*    right: 0;*/
+        /*    bottom: 0;*/
+        /*    width: 36px;*/
+        /*    height: 60px;*/
+        /*    rotate: 180deg;*/
+        /*    opacity: 0;*/
+        /*    animation: stepFade 1s ease forwards;*/
+        /*}*/
+        
+        /*.foot-left {*/
+        
+        /*    background-image: url("./assets/left.png");*/
+        /*}*/
+        
+        /*.foot-right {*/
+        
+        /*    background-image: url("./assets/right.png");*/
+        /*}*/
+    </style>
+</head>
+<body>
+<div id="loadingBox">
+    <div class="loading-text">Lädt...</div>
+</div>
+
+<canvas id="unity-canvas"></canvas>
+<!-- firebase sdk -->
+<script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics-compat.js"></script>
+
+<script>
+    window.sendSupportEmail = function () {
+        const email = "support@kaufland.de";
+        const subject = encodeURIComponent("Supportanfrage");
+        window.location.href = `mailto:${email}?subject=${subject}`;
+    };
+    const buildUrl = "Build";
+    const loaderUrl = buildUrl + "/app.loader.js";
+    const config = {
+        dataUrl: buildUrl + "/app.data.br",
+        frameworkUrl: buildUrl + "/app.framework.js.br",
+        codeUrl: buildUrl + "/app.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "WebGLDemo",
-        productVersion: "0.1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      }).then((unityInstance) => {
-      }).catch((message) => {
-        alert(message);
-      });
-    </script>
-  </body>
+        companyName: "Tabbler",
+        // productName: "Shelf Shuffle",
+        productName: "Kuponia",
+        productVersion: "0.1",
+        canvas: document.querySelector("#unity-canvas"),
+    };
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3ACQkoqPkr4Oo4TEWncCXKxfgCdYq6OM",
+        authDomain: "kaufland-shelfsorting.firebaseapp.com",
+        projectId: "kaufland-shelfsorting",
+        storageBucket: "kaufland-shelfsorting.firebasestorage.app",
+        messagingSenderId: "114818877492",
+        appId: "1:114818877492:web:2f89e7894ffe822c1d2261",
+        measurementId: "G-FK3F7PQB0X",
+    };
+    const firebaseApp = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics(firebaseApp);
+    const loadingBox = document.getElementById("loadingBox");
+    const stepInterval = 400;
+    const script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+        let loading = true;
+        let stepIndex = 0;
+        let side = "left";
+        let activeFeet = 0;
+        const radius = 150; // radius of the circle
+        const centerX = loadingBox.clientWidth / 2;
+        const centerY = loadingBox.clientHeight / 2;
+        const angleStep = (Math.PI * 2) / 13; // adjust for density
+        const stepTimer = setInterval(() => {
+            if (!loading) {
+                clearInterval(stepTimer);
+                return;
+            }
+
+            const angle = (stepIndex * angleStep + Math.PI / 2) % (Math.PI * 2);
+            const nextAngle = ((stepIndex + 1) * angleStep + Math.PI / 2) % (Math.PI * 2);
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            const nextX = centerX + radius * Math.cos(nextAngle);
+            const nextY = centerY + radius * Math.sin(nextAngle);
+            const dx = nextX - x;
+            const dy = nextY - y;
+            const rotationDeg = Math.atan2(dy, dx) * (180 / Math.PI) - 90; // align with "pointing up" default
+            const wrapper = document.createElement("div");
+            wrapper.style.position = "absolute";
+            wrapper.style.left = `${x}px`;
+            wrapper.style.top = `${y}px`;
+            wrapper.style.transform = `rotate(${rotationDeg}deg)`;
+            const foot = document.createElement("div");
+            foot.className = `foot-${side}`;
+            foot.style.animationDelay = "0s";
+            wrapper.appendChild(foot);
+            loadingBox.appendChild(wrapper);
+            activeFeet++;
+
+            foot.addEventListener("animationend", () => {
+                wrapper.remove();
+                activeFeet--;
+            });
+
+            stepIndex++;
+            side = side === "left" ? "right" : "left";
+        }, stepInterval);
+
+        createUnityInstance(config.canvas, config, (progress) => {
+            if (progress >= 1) {
+                loading = false;
+                loadingBox.style.display = "none";
+            }
+        })
+            .then((unityInstance) => {
+                window.unityInstance = unityInstance;
+                loading = false;
+                loadingBox.style.display = "none";
+            })
+            .catch((message) => {
+                alert("Failed to load Unity WebGL build.\n\n" + message);
+            });
+    };
+    document.body.appendChild(script);
+    
+    window.addEventListener("message", function(event) {
+
+        if (!event.data || event.data.type !== "INIT_DATA")
+            return;
+
+        console.log("Received data from host:", event.data.payload);
+
+        if (typeof window.unityInstance !== "undefined") {
+            window.unityInstance.SendMessage(
+                "ExternalBridge",
+                "OnInitData",
+                JSON.stringify(event.data.payload)
+            );
+        }
+    });
+
+    // window.postMessage(
+    //     {
+    //         type: "INIT_DATA"
+    //     },
+    //     "*" // you can restrict this to your domain later
+    // );
+
+</script>
+</body>
 </html>
