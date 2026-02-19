@@ -1,87 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>WebGL_Placeholder_App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <meta charset="utf-8"/>
+    <title>Game Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
+        @font-face {
+            font-family: "KauflandBold";
+            src: url("assets/kaufland-bold.otf") format("opentype");
+            font-weight: normal;
+            font-style: normal;
         }
 
-        #unity-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+          //  font-family: "KauflandBold", sans-serif;
         }
 
         #unity-canvas {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100dvh;
+            display: block;
+            background: #e10915;
         }
+
+        #loadingBox {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #e10915;
+            z-index: 10;
+            width: 100%;
+            height: 50vh;
+
+            .loading-text {
+                color: white;
+                margin-bottom: 10px;
+                font-size: 24px;
+                text-align: center;
+            }
+        }
+
+        /*@keyframes stepFade {*/
+        /*    0% {*/
+        /*        opacity: 0;*/
+        /*        transform: scale(0.8);*/
+        /*    }*/
+        /*    20% {*/
+        /*        opacity: 1;*/
+        /*        transform: scale(1);*/
+        /*    }*/
+        /*    80% {*/
+        /*        opacity: 1;*/
+        /*    }*/
+        /*    100% {*/
+        /*        opacity: 0;*/
+        /*    }*/
+        /*}*/
+        
+        /*.foot-left,*/
+        /*.foot-right {*/
+        /*    background-size: contain;*/
+        /*    background-repeat: no-repeat;*/
+        /*    position: absolute;*/
+        /*    right: 0;*/
+        /*    bottom: 0;*/
+        /*    width: 36px;*/
+        /*    height: 60px;*/
+        /*    rotate: 180deg;*/
+        /*    opacity: 0;*/
+        /*    animation: stepFade 1s ease forwards;*/
+        /*}*/
+        
+        /*.foot-left {*/
+        
+        /*    background-image: url("./assets/left.png");*/
+        /*}*/
+        
+        /*.foot-right {*/
+        
+        /*    background-image: url("./assets/right.png");*/
+        /*}*/
     </style>
 </head>
-
 <body>
-<div id="unity-container">
-    <canvas id="unity-canvas"></canvas>
-</div>
 
-<script src="Build/webgldemo.loader.js"></script>
+
+<canvas id="unity-canvas"></canvas>
+
+<script src="Build/85e7c79883c254dbe8ba99ccb0131492.loader.js"></script>
 <script>
-    const buildUrl = "Build";
-    const config = {
-        dataUrl: buildUrl + "/webgldemo.data.br",
-        frameworkUrl: buildUrl + "/webgldemo.framework.js.br",
-        codeUrl: buildUrl + "/webgldemo.wasm.br",
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.head.appendChild(meta);
+
+        const canvas = document.getElementById("unity-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "fixed";
+
+        document.body.style.textAlign = "left";
+
+    }
+
+    createUnityInstance(document.getElementById("unity-canvas"), {
+        arguments: [],
+        dataUrl: "Build/95cd60fa3b32505fd922d35ff9dc557d.data.unityweb",
+        frameworkUrl: "Build/a71a4e26d317fd382a4672a39b82a06a.framework.js.unityweb",
+        codeUrl: "Build/34b4a46db5d3f64fd75bd68e10f4384a.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
-        productName: "WebGL_Placeholder_App",
-        productVersion: "0.1.0",
-        devicePixelRatio: window.devicePixelRatio || 1
-    };
-
-    createUnityInstance(document.querySelector("#unity-canvas"), config).then((unityInstance) => {
+    productName: "spikes-game",
+    productVersion: "1.0",
+    }).then((unityInstance) => {
         window.unityInstance = unityInstance;
-    }).catch((message) => {
-        alert("Failed to load Unity WebGL build.\n\n" + message);
+    }).catch((message) => { alert(message); });
+    
+    window.addEventListener("message", function(event) {
+
+        if (!event.data || event.data.type !== "INIT_DATA")
+            return;
+
+        console.log("Received data from host:", event.data.payload);
+
+        if (typeof window.unityInstance !== "undefined") {
+            window.unityInstance.SendMessage(
+                "ExternalBridge",
+                "OnInitData",
+                JSON.stringify(event.data.payload)
+            );
+        }
     });
+
+    // window.postMessage(
+    //     {
+    //         type: "INIT_DATA"
+    //     },
+    //     "*" // you can restrict this to your domain later
+    // );
+
 </script>
-
-<!--<input id="mobileInput"-->
-<!--       type="text"-->
-<!--       style="position: absolute; left: -9999px; top: 0px; z-index: 9999; pointer-events: auto;"-->
-<!--/>-->
-
-
-<!--<script>-->
-<!--    function showMobileKeyboard(callbackObjectName, methodName) {-->
-<!--        const input = document.getElementById("mobileInput");-->
-<!--        input.value = "";-->
-<!--        input.focus();-->
-<!--        setTimeout(() => {-->
-<!--            input.focus();-->
-<!--        }, 100); // small delay ensures browser processes focus-->
-
-<!--        input.oninput = function () {-->
-<!--            const value = input.value;-->
-<!--            // Send value to Unity-->
-<!--            unityInstance.SendMessage(callbackObjectName, methodName, value);-->
-<!--        };-->
-
-<!--        input.onblur = function () {-->
-<!--            unityInstance.SendMessage(callbackObjectName, "OnInputFieldBlur", "");-->
-<!--        };-->
-<!--    }-->
-<!--</script>-->
-
-
 </body>
 </html>
