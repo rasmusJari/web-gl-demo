@@ -5,20 +5,12 @@
     <title>Game Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
-        @font-face {
-            font-family: "KauflandBold";
-            src: url("assets/kaufland-bold.otf") format("opentype");
-            font-weight: normal;
-            font-style: normal;
-        }
-
         html,
         body {
             margin: 0;
             padding: 0;
             background: #000;
             overflow: hidden;
-          //  font-family: "KauflandBold", sans-serif;
         }
 
         #unity-canvas {
@@ -51,47 +43,6 @@
                 text-align: center;
             }
         }
-
-        /*@keyframes stepFade {*/
-        /*    0% {*/
-        /*        opacity: 0;*/
-        /*        transform: scale(0.8);*/
-        /*    }*/
-        /*    20% {*/
-        /*        opacity: 1;*/
-        /*        transform: scale(1);*/
-        /*    }*/
-        /*    80% {*/
-        /*        opacity: 1;*/
-        /*    }*/
-        /*    100% {*/
-        /*        opacity: 0;*/
-        /*    }*/
-        /*}*/
-        
-        /*.foot-left,*/
-        /*.foot-right {*/
-        /*    background-size: contain;*/
-        /*    background-repeat: no-repeat;*/
-        /*    position: absolute;*/
-        /*    right: 0;*/
-        /*    bottom: 0;*/
-        /*    width: 36px;*/
-        /*    height: 60px;*/
-        /*    rotate: 180deg;*/
-        /*    opacity: 0;*/
-        /*    animation: stepFade 1s ease forwards;*/
-        /*}*/
-        
-        /*.foot-left {*/
-        
-        /*    background-image: url("./assets/left.png");*/
-        /*}*/
-        
-        /*.foot-right {*/
-        
-        /*    background-image: url("./assets/right.png");*/
-        /*}*/
     </style>
 </head>
 <body>
@@ -99,7 +50,7 @@
 
 <canvas id="unity-canvas"></canvas>
 
-<script src="Build/c0e221653d592f000bfb6141f26abbb5.loader.js"></script>
+<script src="Build/5d61f84fc9f63ea4f72963b8e230cb98.loader.js"></script>
 <script>
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         const meta = document.createElement('meta');
@@ -118,9 +69,9 @@
 
     createUnityInstance(document.getElementById("unity-canvas"), {
         arguments: [],
-        dataUrl: "Build/16101ff9cb1302dd1543133a623b869f.data.unityweb",
+        dataUrl: "Build/c6c67dda3c89f1ab293108d30dfcff55.data.unityweb",
         frameworkUrl: "Build/94bfa2d1825acc464355cd2c3e24b9bb.framework.js.unityweb",
-        codeUrl: "Build/247b885ec557b2bf66248ea7a5a73db6.wasm.unityweb",
+        codeUrl: "Build/0825025b296529a6d6d7c384c57ae119.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
     productName: "spikes-game",
